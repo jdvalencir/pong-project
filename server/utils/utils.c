@@ -30,6 +30,7 @@ int add_player_to_room(room* room, int client_socket){
     if(room->player1 == NULL){
         room->player1 = malloc(sizeof(player));
         room->player1->client_socket = client_socket;
+        printf("Room code: %s\n", room->code);
         return 1;
     }  
     return 0;
@@ -47,6 +48,7 @@ int add_player2_to_room(room* room, int client_socket){
 
 room* find_or_create_room(room* ROOMS[MAX_ROOMS]){
     for(int i = 0; i < MAX_ROOMS; i++){
+        printf("Position: %d\n", i);
         if(ROOMS[i] == NULL){
             room* room = malloc(sizeof(room));
             char* code_room = generate_random_string(6);
@@ -75,15 +77,19 @@ room* find_room_by_id(room* ROOMS[MAX_ROOMS], char* room_id){
 room* find_room_by_client_socket(room* ROOMS[MAX_ROOMS], int client_socket){
     for(int i = 0; i < MAX_ROOMS; i++){
         if(ROOMS[i] != NULL){
+            printf("Find Room by client: %s\n", ROOMS[i]->code);
             if(ROOMS[i]->player1 != NULL){
+                printf("Player1: %d\n", ROOMS[i]->player1->client_socket);
                 if(ROOMS[i]->player1->client_socket == client_socket){  
-                    printf("Position find_by_client_socket: %d\n", i);
+                    printf("Player1: client_socket: %d ", client_socket);
+                    printf("Player1: Position find_by_client_socket: %d ", i);
+                    printf("Player1: code: %s\n", ROOMS[i]->code);
                     return ROOMS[i];
                 }
             }
             if(ROOMS[i]->player2 != NULL){
                 if(ROOMS[i]->player2->client_socket == client_socket){ 
-                    printf("Position find_by_client_socket: %d\n", i);
+                    printf("Player2: Position find_by_client_socket: %d\n", i);
                     return ROOMS[i];
                 }
             }
@@ -95,7 +101,6 @@ room* find_room_by_client_socket(room* ROOMS[MAX_ROOMS], int client_socket){
 void remove_room(room* ROOMS[MAX_ROOMS], room* room) {
     // Liberar memoria de la sala
     free(room);
-
     // Establecer la entrada en el arreglo de salas como NULL
     for (int i = 0; i < MAX_ROOMS; i++) {
         if (ROOMS[i] == room) {

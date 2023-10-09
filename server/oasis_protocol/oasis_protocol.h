@@ -7,7 +7,7 @@
 #define JOIN_ROOM_SUCCESS "JOIN_ROOM_SUCCESS"
 #define JOIN_ROOM_ERROR "JOIN_ROOM_ERROR"
 
-#define CREATE_ROOM "CREATE_ROOM"
+#define CREATE_ROOM "CREATE_ROOM\0"
 #define CREATE_ROOM_SUCCESS "CREATE_ROOM_SUCCESS"
 #define CREATE_ROOM_ERROR "CREATE_ROOM_ERROR"
 
@@ -39,13 +39,15 @@
 #define LEAVE_ROOM_SUCCESS "LEAVE_ROOM_SUCCESS"
 #define LEAVE_ROOM_ERROR "LEAVE_ROOM_ERROR"
 
+#define NOT_READY "NOT_READY"
 #define NOT_READY_SUCCESS "NOT_READY_SUCCESS"
+#define NOT_READY_ERROR "NOT_READY_ERROR"
 
 #define PLAYER1_DISCONNECTED "PLAYER1_DISCONNECTED"
 #define PLAYER2_DISCONNECTED "PLAYER2_DISCONNECTED"
 
 
-const char* process_message(const protocol_message* message);
+const int process_message(const protocol_message* message);
 int send_message(int socket, const char* message);
 int send_response_message(int client_socket, char* MESSAGE_TYPE, char* payload);
 int receive_message(int socket, char* buffer);

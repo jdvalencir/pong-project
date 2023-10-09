@@ -7,20 +7,30 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char* process_message(const protocol_message* message){
+const int process_message(const protocol_message* message){
+    printf("Processing message...\n");
+    printf("Message type: %s\n", message->type);
     if(strcmp(message->type, JOIN_ROOM) == 0) {
         printf("Join room command\n");
         printf("Payload: %s\n", message->payload);
         join_room_controller(message->client_socket, message->payload);
-        return JOIN_ROOM;
+        return 1;
     } else if(strcmp(message->type, CREATE_ROOM) == 0) {
         printf("Create room command\n");
         create_room_controller(message->client_socket);
-        return CREATE_ROOM;
+        return 1;
+    } else if(strcmp(message->type, READY) == 0) {
+        printf("Ready command");
+        ready_controller(message->client_socket);
+        return 1;
+    } else if(strcmp(message->type, NOT_READY) == 0) {
+        printf("Not ready command\n");
+        not_ready_controller(message->client_socket);
+        return 1;
     }  else if(strcmp(message->type, DISCONNECT) == 0) {
         printf("Disconnect command\n");
         disconnect_controller(message->client_socket);
-        return DISCONNECT;
+        return 0;
     }
 }
 

@@ -21,7 +21,6 @@ int main() {
     int server_socket, client_socket, address_size; 
     SA_IN server_address, client_address;
     pthread_t thread;
-
     checkFunctions((server_socket = socket(AF_INET, SOCK_STREAM, 0)), "Failed to create the socket!"); 
     bind_socket(server_socket, server_address); 
     checkFunctions((listen(server_socket, MAX_CURRENT_USERS)), "Listen Failed!"); 
@@ -31,38 +30,49 @@ int main() {
         checkFunctions((client_socket = accept(server_socket, (SA*)&client_address, (socklen_t*)&address_size)), 
         "Accept failed!");
         printf("Connection accepted!\n");
-        int* client = malloc(sizeof(int));
-        *client = client_socket;
-        pthread_create(&thread, NULL, &handle_connection, (void*)client);
+        int* client_socket_arg = malloc(sizeof(int));
+        *client_socket_arg = client_socket;
+
+        pthread_create(&thread, NULL, &handle_connection, (void*)client_socket_arg);
         sleep(1);
     }    
     return 0; 
 }
 
-void* handle_connection(void* client_socket){
-    int socket = *(int*)client_socket;
-    char buffer[BUFFER_SIZE];
-    send_response_message(socket, "WELCOME", "Welcome to the server!");  
-    while (1) {
-        int bytes_received = receive_message(socket, buffer);
-        if(bytes_received <= 0) close(client_socket);
-        if(!bytes_received) printf("Connection lost!\n");
+void* handle_connection(void* client_socket_arg){
+    int client_socket = *((int*)client_socket_arg); // Convierte el argumento a un entero
 
-        struct KeyValue* kv = parse_json_message(buffer);
+    char buffer[BUFFER_SIZE];
+    while (1) {
+        int bytes_received = receive_message(client_socket, buffer);
+        printf("Bytes received: %s\n", buffer);
+        if (bytes_received <= 0) {
+            // Si no se recibieron bytes o se produjo un error, salimos del bucle
+            break;
+        }
+
+        int count;
+        struct KeyValue* kv = parse_json_message(buffer, &count);
         protocol_message* message = malloc(sizeof(protocol_message));
-        message->client_socket = socket;
+        message->client_socket = client_socket;
         message->type = kv[0].value;
+        printf("=======================================\n");
         printf("Message type: %s\n", message->type);
         message->payload = kv[1].value;
-        char* proccessed_message = process_message(message);
-        if(strcmp(proccessed_message, DISCONNECT) == 0) {
-            close(socket);
-            free(client_socket);
-            pthread_detach(pthread_self());
-            return NULL;
-        }
+        int processed_message = process_message(message);
+        printf("Processed message: %d\n", processed_message);
+        if(processed_message == 0) break;
+        // Haces lo que necesites con processed_message
+        printf("=======================================\n");
         bzero(buffer, BUFFER_SIZE);
     }
+
+    // Cerramos el socket y liberamos la memoria
+    close(client_socket);
+    free(client_socket_arg);
+    // Terminamos el hilo
+    pthread_exit(NULL);
+    return NULL;
 }
 
 void bind_socket(int server_socket, SA_IN server_address){
