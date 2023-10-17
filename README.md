@@ -43,3 +43,9 @@ Type: “JOIN_SUCCESS”
 Nickname: “ ”
 }
 ```
+## Conclusiones
+### Usamos el protocolo TCP ya que no hay que emparejar muchos usuarios al mismo tiempo, esto debido a que contamos un con juego usuario a usuario que no requiere otro tipo de protocolo
+---
+### Es necesaria la instalación de Tk en python para el uso del juego
+---
+### Actualmente el juego solo funciona en sistemas operativos linux, esto debido a la configuración de los sockets, estamos trabajando en resolverlo
