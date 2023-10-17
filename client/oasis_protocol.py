@@ -10,7 +10,6 @@ class Oasis():
         self.client_socket = None
         self.is_connected = False
 
-    # Connect to server function
     def connect_to_server_protocol(self):
         try: 
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,7 +19,6 @@ class Oasis():
             print(f"Error connection to server {str(e)}") 
             return False, None
     
-    # Send message to server function
     def send_message_protocol(self, message):
         if self.client_socket is not None:
             try: 
@@ -32,7 +30,6 @@ class Oasis():
         else:
             return False
         
-    # receive message from server function
     def receive_message_protocol(self):
         if self.client_socket is not None:
             try:
@@ -41,30 +38,28 @@ class Oasis():
                     message_json = json.loads(message_json)
                     return message_json
                 else:
-                    return None  # No hay mensaje disponible
+                    return None
             except Exception as e:
                 print(f"Error receiving message from server: {str(e)}")
                 return None
         else:
             return None
 
-    # Create room function
     def create_room_protocol(self, nickname):
         success = self.connect_to_server_protocol()
         if success:
-            crete_room_message = { "type": CREATE_ROOM, "payload": nickname } 
+            crete_room_message = f'type {CREATE_ROOM} nickname {nickname}' 
             if self.send_message_protocol(crete_room_message):
                 response = self.receive_message_protocol()
                 print(response)
                 if response["type"] == CREATE_ROOM_SUCCESS:
-                    return response["payload"], True
+                    return response["room_code"], True
         return None, False
     
-    # Join room function        
     def join_room_protocol(self, room_code, nickname):
         success = self.connect_to_server_protocol()
         if success: 
-            join_room_message = { "type": JOIN_ROOM, "payload": room_code } 
+            join_room_message = f'type {JOIN_ROOM} nickname {nickname} room_code {room_code}' 
             if self.send_message_protocol(join_room_message):
                 response = self.receive_message_protocol()
                 if response["type"] == JOIN_ROOM_SUCCESS:
@@ -72,27 +67,32 @@ class Oasis():
         return False
     
     # Disconnect from server function. This function does not wait for the response
-    # Because the thread has to listen all the responses from the server
     def disconnect_from_server_protocol(self):
-        disconnect_message = { "type": DISCONNECT }
+        disconnect_message = f'type {DISCONNECT}'
         if self.send_message_protocol(disconnect_message):
             return True
     
-    # Ready function
     def ready_protocol(self):
-        ready_message = { "type": READY }
+        ready_message = f'type {READY}'
         if self.send_message_protocol(ready_message):
             return True
         
-    # Not ready function
     def not_ready_protocol(self): 
-        not_ready_message = { "type": NOT_READY }
+        not_ready_message = f'type {NOT_READY}'
         if self.send_message_protocol(not_ready_message):
             return True
     
+    def move_paddle_protocol(self, move):
+        move_paddle_message = f'type {UPDATE_GAME} payload {move}'
+        if self.send_message_protocol(move_paddle_message):
+            return True
+    
+    def update_ball_controller(self, ball_x):
+        update_ball_message = f'type {BALL_UPDATE} ball_x {ball_x}'
+        if self.send_message_protocol(update_ball_message):
+            return True
 
-    # TODO MAKE THE CONTROLLER IN THE SERVER SIDE AND THE CLIENT SIDE
-    # def update_game_protocol(self, game):
-    #     update_game_message = { "type": UPDATE_GAME, "payload": game }
-    #     if self.send_message_protocol(update_game_message):
-    #         return True
+    def player_scored_protocol(self, score_player):
+        player_scored_message = f'type {PLAYER_SCORED} score_player {score_player}'
+        if self.send_message_protocol(player_scored_message):
+            return True

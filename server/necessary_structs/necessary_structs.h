@@ -11,37 +11,31 @@ struct KeyValue {
 
 typedef struct Player {
     int client_socket; 
-    char* nick_name;
+    char* nickname;
     int ready;
 } player;
-
-typedef struct Game_state {
-    int player1Y;
-    int player2Y;
-    int score_player1;
-    int score_player2;
-    int ball_x;
-    int ball_y;
-    int ball_velocity_x;
-    int ball_velocity_y;
-    int ball_radius;
-} game_state;
 
 typedef struct Room{
     char code[LENGTH_CODE_ROOM];
     player* player1;
     player* player2; 
     int is_full;
-    game_state* game_state;
-    pthread_t room_thread;
-    pthread_mutex_t mutex; 
-    pthread_cond_t cond;
+    int player1_score;
+    int player2_score;
 } room;
 
 typedef struct Protocol_message {
     int client_socket;
     char* type;
+    char* room_code;
+    char* nickname;
+    int pos_x_ball;
+    int score_player1;
+    int score_player2;
     char* payload; 
 } protocol_message;
+
+typedef struct sockaddr_in SA_IN; 
+typedef struct sockaddr SA;
 
 #endif

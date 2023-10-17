@@ -1,8 +1,8 @@
 from oasis_protocol import Oasis
-from principalInterface import PrincipalMenu
+from principal_interface import PrincipalMenu
 
 SERVER_IP = "127.0.0.1"
-SERVER_PORT = 8081
+SERVER_PORT = 8080
 
 def main():
 

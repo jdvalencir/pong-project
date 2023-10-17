@@ -2,12 +2,12 @@
 #define OASIS_PROTOCOL_H_
 
 #include "../necessary_structs/necessary_structs.h"
-// Define comandos del protocolo Oasis
+
 #define JOIN_ROOM "JOIN_ROOM"
 #define JOIN_ROOM_SUCCESS "JOIN_ROOM_SUCCESS"
 #define JOIN_ROOM_ERROR "JOIN_ROOM_ERROR"
 
-#define CREATE_ROOM "CREATE_ROOM\0"
+#define CREATE_ROOM "CREATE_ROOM"
 #define CREATE_ROOM_SUCCESS "CREATE_ROOM_SUCCESS"
 #define CREATE_ROOM_ERROR "CREATE_ROOM_ERROR"
 
@@ -46,10 +46,30 @@
 #define PLAYER1_DISCONNECTED "PLAYER1_DISCONNECTED"
 #define PLAYER2_DISCONNECTED "PLAYER2_DISCONNECTED"
 
+#define UPDATE_GAME "UPDATE_GAME"
+#define UPDATE_GAME_SUCCESS "UPDATE_GAME_SUCCESS"
+#define UPDATE_GAME_ERROR "UPDATE_GAME_ERROR"
 
-const int process_message(const protocol_message* message);
+#define BALL_UPDATE "BALL_UPDATE"
+#define BALL_UPDATE_SUCCESS "BALL_UPDATE_SUCCESS"
+#define BALL_UPDATE_ERROR "BALL_UPDATE_ERROR"
+
+#define PLAYER_SCORED "PLAYER_SCORED"
+#define PLAYER_SCORED_SUCCESS "PLAYER_SCORED_SUCCESS"
+#define PLAYER_SCORED_ERROR "PLAYER_SCORED_ERROR"
+
+#define PLAYER_WON "PLAYER_WON"
+#define PLAYER_LOST "PLAYER_LOST"
+
+int process_message(protocol_message* message);
 int send_message(int socket, const char* message);
-int send_response_message(int client_socket, char* MESSAGE_TYPE, char* payload);
 int receive_message(int socket, char* buffer);
+int send_response_message(int client_socket, char* MESSAGE_TYPE, char* payload);
+int send_response_advanced(int client_socket, char* TYPE, char* nickname, char* room_code, char* payload);
+int send_response_start_game(int client_socket, char* TYPE, char* nickname, char* room_code, int pos_x_ball, char* payload);
+int send_update_score(int client_socket, char* TYPE, int score_player1, int score_player2, int pos_x_ball, char* payload);
+void bind_socket(int server_socket, SA_IN server_address); 
+void* handle_connection(void* client_socket_arg);
+void start_server_function();
 
 #endif
